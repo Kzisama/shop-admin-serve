@@ -33,3 +33,18 @@ export const createFn = (req: Request, res: Response) => {
 		});
 	});
 };
+
+// 获取用户信息
+export const getInfoFn = (req: Request, res: Response) => {
+	const sqlStr =
+		"select id,username,avatar,createtime,role from user_table where id = ?";
+	db.query(sqlStr, (req as any).user.id, (err, results) => {
+		if (err) {
+			return res.send({ code: 1, msg: err.message });
+		}
+		if (results.length !== 1) {
+			return res.send({ code: 1, msg: "查询失败" });
+		}
+		res.send({ code: 0, msg: "获取用户信息成功", data: results[0] });
+	});
+};
