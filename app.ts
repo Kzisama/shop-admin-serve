@@ -45,7 +45,9 @@ app.use((err: Errback, req: Request, res: Response, next: NextFunction) => {
 			msg: "身份验证失败",
 		});
 	// 其他错误
-	if (err) return res.send({ code: 1, msg: err });
+	if (err) {
+		return res.send({ code: 1, msg: err });
+	}
 	next();
 });
 
