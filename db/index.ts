@@ -5,6 +5,7 @@ const db: Connection = mysql.createConnection({
 	user: "root",
 	password: "admin123",
 	database: "shop-admin",
+	multipleStatements: true, // 可同时执行多条语句
 });
 
 export default db;

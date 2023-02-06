@@ -1,6 +1,11 @@
 import express, { Router } from "express";
 // 路由处理函数
-import { createFn, getInfoFn, updatePasswordFn } from "../router-handler/user";
+import {
+	createFn,
+	getInfoFn,
+	updatePasswordFn,
+	logoutFn,
+} from "../router-handler/user";
 
 const router: Router = express.Router();
 
@@ -12,5 +17,8 @@ router.get("/info", getInfoFn);
 
 // 修改用户密码
 router.post("/updatepassword", updatePasswordFn);
+
+// 用户退出
+router.post("/logout", logoutFn);
 
 export default router;

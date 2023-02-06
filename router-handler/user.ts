@@ -40,25 +40,27 @@ export const createFn = (req: Request, res: Response) => {
 
 // 获取用户信息
 export const getInfoFn = (req: Request, res: Response) => {
-	const sqlStr =
-		"select id,username,avatar,createtime,role from user_table where id = ?";
-	db.query(sqlStr, (req as any).user.id, (err, results) => {
+	const sqlStr = "select * from user_table where userID = ?";
+	db.query(sqlStr, (req as any).user.userID, (err, results) => {
 		if (err) {
 			return res.send({ code: 1, msg: err.message });
 		}
 		if (results.length !== 1) {
 			return res.send({ code: 1, msg: "查询失败" });
 		}
-		res.send({ code: 0, msg: "获取用户信息成功", data: results[0] });
+		res.send({
+			code: 0,
+			msg: "获取用户信息成功",
+			data: { ...results[0], password: null },
+		});
 	});
 };
 
 // 修改用户密码
 export const updatePasswordFn = (req: Request, res: Response) => {
-	console.log(req.body);
 	const userInfo = req.body;
-	const sqlStr = "select * from user_table where id = ?";
-	db.query(sqlStr, (req as any).user.id, (err, results) => {
+	const sqlStr = "select * from user_table where userID = ?";
+	db.query(sqlStr, (req as any).user.userID, (err, results) => {
 		if (err) return res.send({ code: 1, msg: err.message });
 		if (results.length !== 1) return res.send({ code: 1, msg: "未知用户" });
 		// 判断原密码和数据库中是否一致
@@ -74,10 +76,10 @@ export const updatePasswordFn = (req: Request, res: Response) => {
 		// 新旧密码不一致 并且 新密码和确认密码一致
 		if (finalCompare && reqCompare && !compareRes) {
 			userInfo.password = bcrypt.hashSync(userInfo.password, 5);
-			const sql = "update user_table set password = ? where id = ?";
+			const sql = "update user_table set password = ? where userID = ?";
 			db.query(
 				sql,
-				[userInfo.password, (req as any).user.id],
+				[userInfo.password, (req as any).user.userID],
 				(err2, results2) => {
 					if (err2) return res.send({ code: 1, msg: err2.message });
 					if (results2.affectedRows !== 1)
@@ -86,7 +88,18 @@ export const updatePasswordFn = (req: Request, res: Response) => {
 				}
 			);
 		} else {
-			res.send({ code: 1, msg: "原密码错误或确认密码不正确" });
+			res.send({ code: 1, msg: "原密码或确认密码错误" });
 		}
+	});
+};
+
+// 用户退出
+export const logoutFn = (req: Request, res: Response) => {
+	const sqlStr = "update user_table set status = 0 where userID = ?";
+	db.query(sqlStr, (req as any).user.userID, (err, results) => {
+		if (err) return res.send({ code: 1, msg: err.message });
+		if (results.affectedRows !== 1)
+			return res.send({ code: 1, msg: "退出失败" });
+		res.send({ code: 0, msg: "退出成功" });
 	});
 };
