@@ -5,6 +5,7 @@ import {
 	getInfoFn,
 	updatePasswordFn,
 	logoutFn,
+	getRoutesFn,
 } from "../router-handler/user";
 
 const router: Router = express.Router();
@@ -20,5 +21,8 @@ router.post("/updatepassword", updatePasswordFn);
 
 // 用户退出
 router.post("/logout", logoutFn);
+
+// 获取用户路由
+router.get("/routes", getRoutesFn);
 
 export default router;

@@ -3,6 +3,7 @@ import moment from "moment";
 import db from "../db";
 // 处理密码
 import bcrypt from "bcryptjs";
+import { resolve } from "path";
 
 // 创建用户
 export const createFn = (req: Request, res: Response) => {
@@ -101,5 +102,27 @@ export const logoutFn = (req: Request, res: Response) => {
 		if (results.affectedRows !== 1)
 			return res.send({ code: 1, msg: "退出失败" });
 		res.send({ code: 0, msg: "退出成功" });
+	});
+};
+
+// 获取用户路由
+export const getRoutesFn = (req: Request, res: Response) => {
+	const sqlStr = "select role from user_table where userID = ?";
+	db.query(sqlStr, (req as any).user.userID, (err, results) => {
+		if (err) return res.send({ code: 1, msg: err.message });
+		if (results.length !== 1) return res.send({ code: 1, msg: "未知用户" });
+
+		const sql = "select * from route_table";
+		db.query(sql, (err2, results2) => {
+			if (err2) return res.send({ code: 1, msg: err2.message });
+			res.send({
+				code: 0,
+				msg: "获取路由成功",
+				data: {
+					role: results[0].role,
+					allRoutes: results2,
+				},
+			});
+		});
 	});
 };
