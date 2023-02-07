@@ -3,7 +3,8 @@ import moment from "moment";
 import db from "../db";
 // 处理密码
 import bcrypt from "bcryptjs";
-import { resolve } from "path";
+import { IRoute } from "../typeings";
+import { useGetUserRoutes } from "../hooks";
 
 // 创建用户
 export const createFn = (req: Request, res: Response) => {
@@ -115,12 +116,15 @@ export const getRoutesFn = (req: Request, res: Response) => {
 		const sql = "select * from route_table";
 		db.query(sql, (err2, results2) => {
 			if (err2) return res.send({ code: 1, msg: err2.message });
+
+			// 获取用户拥有路由
+			const userRoutes = useGetUserRoutes(results[0].role, results2);
+
 			res.send({
 				code: 0,
 				msg: "获取路由成功",
 				data: {
-					role: results[0].role,
-					allRoutes: results2,
+					userRoutes,
 				},
 			});
 		});
