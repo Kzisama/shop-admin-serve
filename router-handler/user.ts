@@ -1,28 +1,45 @@
 import { Request, Response } from "express";
 import moment from "moment";
 import db from "../db";
+import { admin, saleMan } from "../roles";
 // 处理密码
 import bcrypt from "bcryptjs";
-import { IRoute } from "../typeings";
 import { useGetUserRoutes } from "../hooks";
 
 // 创建用户
 export const createFn = (req: Request, res: Response) => {
 	const userInfo = req.body;
+
 	const sqlStr = "select username from user_table where username = ?";
 	db.query(sqlStr, userInfo.username, (err, results) => {
-		err && res.send({ code: 1, msg: err.message });
-		results.length !== 0 && res.send({ code: 1, msg: "用户已存在" });
+		if (err) {
+			return res.send({ code: 1, msg: err.message });
+		}
+		if (results.length !== 0) {
+			return res.send({ code: 1, msg: "用户已存在" });
+		}
 		// 符合要求，可以注册
 		// 对用户的密码,进行 bcrype 加密，返回值是加密之后的密码字符串
 		userInfo.password = bcrypt.hashSync(userInfo.password, 5);
+		// 用户身份
+		let userRole: number[] = [];
+		switch (userInfo.character) {
+			case "管理员":
+				userRole = admin;
+				break;
+			case "销售":
+				userRole = saleMan;
+				break;
+			default:
+				break;
+		}
 		// 插入到数据库中的数据
 		const insertInfo = {
 			...userInfo,
-			character: "超级管理员",
-			role: JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+			role: JSON.stringify(userRole),
 			createtime: moment().format(),
 		};
+
 		const sql = "insert into user_table set ?";
 		db.query(sql, insertInfo, (err2, results2) => {
 			if (err2) {
@@ -34,7 +51,7 @@ export const createFn = (req: Request, res: Response) => {
 			// 创建成功
 			res.send({
 				code: 0,
-				msg: "创建成功",
+				msg: "创建用户成功",
 			});
 		});
 	});
