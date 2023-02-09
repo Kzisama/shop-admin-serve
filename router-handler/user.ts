@@ -75,6 +75,18 @@ export const getInfoFn = (req: Request, res: Response) => {
 	});
 };
 
+// 修改用户信息
+export const updateFn = (req: Request, res: Response) => {
+	const userInfo = req.body;
+	const sqlStr = "update user_table set ? where userID = ?";
+	db.query(sqlStr, [userInfo, (req as any).user.userID], (err, results) => {
+		if (err) return res.send({ code: 1, msg: err.message });
+		if (results.affectedRows !== 1)
+			return res.send({ code: 1, msg: "修改失败" });
+		res.send({ code: 0, msg: "修改成功" });
+	});
+};
+
 // 修改用户密码
 export const updatePasswordFn = (req: Request, res: Response) => {
 	const userInfo = req.body;
