@@ -5,6 +5,7 @@ import { admin, saleMan } from "../roles";
 // 处理密码
 import bcrypt from "bcryptjs";
 import { useGetUserRoutes } from "../hooks";
+import path from "path";
 
 // 创建用户
 export const createFn = (req: Request, res: Response) => {
@@ -157,5 +158,17 @@ export const getRoutesFn = (req: Request, res: Response) => {
 				},
 			});
 		});
+	});
+};
+
+// 更新用户头像
+export const updateAvatarFn = (req: Request, res: Response) => {
+	const avatar = path.join("/avatar", (req as any).file.filename);
+	const sqStr = "update user_table set avatar = ? where userID = ?";
+	db.query(sqStr, [avatar, (req as any).user.userID], (err, results) => {
+		if (err) return res.send({ code: 1, msg: err.message });
+		if (results.affectedRows !== 1)
+			return res.send({ code: 1, msg: "修改头像失败" });
+		res.send({ code: 0, msg: "修改头像成功" });
 	});
 };

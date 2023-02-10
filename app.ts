@@ -24,9 +24,12 @@ const expressJWT = require("express-jwt");
 // 使用 .unless({ path: [/^\/api\//] }) 指定哪些接口不需要进行 Token 的身份认证
 app.use(
 	expressJWT({ secret: config.jwtSecretKey }).unless({
-		path: [/^\/api\//],
+		path: [/^\/api\//, /^\/avatar\//],
 	})
 );
+
+// 提供静态资源
+app.use(express.static("./public"));
 
 // 用户登录
 import loginRouter from "./router/login";
