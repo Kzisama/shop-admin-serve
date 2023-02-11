@@ -39,6 +39,10 @@ app.use("/api", loginRouter);
 import userRoute from "./router/user";
 app.use("/user", userRoute);
 
+// 通知模块
+import noticeRoute from "./router/notice";
+app.use("/notice", noticeRoute);
+
 // 捕获全局错误
 app.use((err: Errback, req: Request, res: Response, next: NextFunction) => {
 	// 捕获身份认证失败的错误
