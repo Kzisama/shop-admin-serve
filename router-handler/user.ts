@@ -58,7 +58,7 @@ export const createFn = (req: Request, res: Response) => {
 	});
 };
 
-// 获取用户信息
+// 获取用户信息（指定ID）
 export const getInfoFn = (req: Request, res: Response) => {
 	const sqlStr = "select * from user_table where userID = ?";
 	db.query(sqlStr, (req as any).user.userID, (err, results) => {
@@ -72,6 +72,25 @@ export const getInfoFn = (req: Request, res: Response) => {
 			code: 0,
 			msg: "获取用户信息成功",
 			data: { ...results[0], password: null },
+		});
+	});
+};
+
+// 获取全部用户信息
+export const getInfoAllFn = (req: Request, res: Response) => {
+	const sqlStr = "select * from user_table";
+	db.query(sqlStr, (req as any).user.userID, (err, results) => {
+		if (err) {
+			return res.send({ code: 1, msg: err.message });
+		}
+		results.forEach((item: any) => {
+			item.password = null;
+			item.role = null;
+		});
+		res.send({
+			code: 0,
+			msg: "获取成功",
+			data: results,
 		});
 	});
 };

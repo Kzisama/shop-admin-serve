@@ -1,3 +1,4 @@
+import { getInfoAllFn } from "./../router-handler/user";
 import express, { Router } from "express";
 // 路由处理函数
 import {
@@ -34,6 +35,9 @@ router.post("/create", createFn);
 
 // 获取用户信息
 router.get("/info", getInfoFn);
+
+// 获取全部用户信息
+router.get("/allinfo", getInfoAllFn);
 
 // 修改用户信息
 router.post("/update", updateFn);
