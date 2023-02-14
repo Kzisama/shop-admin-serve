@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import moment from "moment";
 import db from "../db";
-import { admin, saleMan } from "../roles";
 // 处理密码
 import bcrypt from "bcryptjs";
 import { useGetUserRoutes } from "../hooks";
@@ -23,36 +22,30 @@ export const createFn = (req: Request, res: Response) => {
     // 对用户的密码,进行 bcrype 加密，返回值是加密之后的密码字符串
     userInfo.password = bcrypt.hashSync(userInfo.password, 5);
     // 用户身份
-    let userRole: number[] = [];
-    switch (userInfo.character) {
-      case "管理员":
-        userRole = admin;
-        break;
-      case "销售":
-        userRole = saleMan;
-        break;
-      default:
-        break;
-    }
-    // 插入到数据库中的数据
-    const insertInfo = {
-      ...userInfo,
-      role: JSON.stringify(userRole),
-      createtime: moment().format(),
-    };
-
-    const sql = "insert into user_table set ?";
-    db.query(sql, insertInfo, (err2, results2) => {
-      if (err2) {
-        return res.send({ code: 1, msg: err2.message });
-      }
-      if (results2.affectedRows !== 1) {
-        return res.send({ code: 1, msg: "创建用户失败" });
-      }
-      // 创建成功
-      res.send({
-        code: 0,
-        msg: "创建用户成功",
+    let userRole: string;
+    const roleStr = "select `roles` from role_table where `character` = ?";
+    db.query(roleStr, userInfo.character, (_err, _results) => {
+      if (_err) return res.send({ code: 1, msg: _err.message });
+      userRole = _results[0].roles;
+      // 插入到数据库中的数据
+      const insertInfo = {
+        ...userInfo,
+        role: userRole,
+        createtime: moment().format(),
+      };
+      const sql = "insert into user_table set ?";
+      db.query(sql, insertInfo, (err2, results2) => {
+        if (err2) {
+          return res.send({ code: 1, msg: err2.message });
+        }
+        if (results2.affectedRows !== 1) {
+          return res.send({ code: 1, msg: "创建用户失败" });
+        }
+        // 创建成功
+        res.send({
+          code: 0,
+          msg: "创建用户成功",
+        });
       });
     });
   });
