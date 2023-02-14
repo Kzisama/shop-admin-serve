@@ -1,9 +1,9 @@
 import express, {
-	Express,
-	Response,
-	Request,
-	NextFunction,
-	Errback,
+  Express,
+  Response,
+  Request,
+  NextFunction,
+  Errback,
 } from "express";
 
 const app: Express = express();
@@ -23,9 +23,9 @@ import config from "./config";
 const expressJWT = require("express-jwt");
 // 使用 .unless({ path: [/^\/api\//] }) 指定哪些接口不需要进行 Token 的身份认证
 app.use(
-	expressJWT({ secret: config.jwtSecretKey }).unless({
-		path: [/^\/api\//, /^\/avatar\//],
-	})
+  expressJWT({ secret: config.jwtSecretKey }).unless({
+    path: [/^\/api\//, /^\/avatar\//],
+  })
 );
 
 // 提供静态资源
@@ -45,20 +45,20 @@ app.use("/notice", noticeRoute);
 
 // 捕获全局错误
 app.use((err: Errback, req: Request, res: Response, next: NextFunction) => {
-	// 捕获身份认证失败的错误
-	if (err.name === "UnauthorizedError")
-		return res.send({
-			code: 401,
-			msg: "身份验证失败",
-			err,
-		});
-	// 其他错误
-	if (err) {
-		return res.send({ code: 1, msg: err });
-	}
-	next();
+  // 捕获身份认证失败的错误
+  if (err.name === "UnauthorizedError")
+    return res.send({
+      code: 401,
+      msg: "身份验证失败",
+      err,
+    });
+  // 其他错误
+  if (err) {
+    return res.send({ code: 1, msg: err });
+  }
+  next();
 });
 
 app.listen(8081, () => {
-	console.log("serve is running on http://127.0.0.1:8081");
+  console.log("serve is running on http://127.0.0.1:8081");
 });
