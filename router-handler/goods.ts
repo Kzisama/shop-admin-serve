@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import path from 'path'
 import db from '../db'
 
 // 添加商品分类
@@ -45,5 +46,26 @@ export const delCategoryFn = (req: Request, res: Response) => {
     if (err) return res.send({ code: 1, msg: err.message })
     if (results.affectedRows !== 1) return res.send({ code: 1, msg: '下架商品类失败' })
     res.send({ code: 0, msg: '下架成功' })
+  })
+}
+
+// 添加商品
+export const addGoodsFn = (req: Request, res: Response) => {
+  const pic = path.join('/goods', (req as any).file.filename)
+  const goodsInfo = { ...req.body, pic }
+  const sqlStr = 'insert into goods_table set ?'
+  db.query(sqlStr, goodsInfo, (err, results) => {
+    if (err) return res.send({ code: 1, msg: err.message })
+    if (results.affectedRows !== 1) return res.send({ code: 1, msg: '添加商品失败' })
+    res.send({ code: 0, msg: '添加商品成功' })
+  })
+}
+
+// 获取全部商品
+export const getGoodsListFn = (req: Request, res: Response) => {
+  const sqlStr = 'select * from goods_table'
+  db.query(sqlStr, (err, results) => {
+    if (err) return res.send({ code: 1, msg: err.message })
+    res.send({ code: 0, msg: '获取商品列表成功', data: results })
   })
 }

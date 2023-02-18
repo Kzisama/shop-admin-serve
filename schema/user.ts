@@ -1,5 +1,5 @@
 // 用户信息验证
-import joi from "joi";
+import joi from 'joi'
 
 /**
  * string() 值必须是字符串
@@ -11,16 +11,16 @@ import joi from "joi";
  */
 
 // 用户名验证规则
-const usernameReg = /^[a-zA-Z0-9_]{5,10}$/;
-const usernameSchema = joi.string().required().pattern(usernameReg);
+const usernameReg = /^[a-zA-Z0-9_]{5,10}$/
+const usernameSchema = joi.string().required().pattern(usernameReg)
 
 // 密码验证规则
-const passwordReg = /^[a-zA-Z0-9_]{6,10}$/;
-const passwordSchema = joi.string().required().pattern(passwordReg);
+const passwordReg = /^[a-zA-Z0-9_]{6,10}$/
+const passwordSchema = joi.string().required().pattern(passwordReg)
 
 export const login_create_schema = {
-	body: {
-		user_name: usernameSchema,
-		user_pwd: passwordSchema,
-	},
-};
+  body: {
+    user_name: usernameSchema,
+    user_pwd: passwordSchema,
+  },
+}
