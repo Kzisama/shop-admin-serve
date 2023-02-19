@@ -6,6 +6,9 @@ import {
   setCategoryFn,
   addGoodsFn,
   getGoodsListFn,
+  setGoodsFn,
+  takeOffGoodsFn,
+  delGoodsFn,
 } from '../router-handler/goods'
 
 // 解析表单数据 form-data
@@ -38,5 +41,11 @@ router.post('/delcategory', delCategoryFn)
 router.post('/addgoods', upload.single('pic'), addGoodsFn)
 
 router.get('/getgoods', getGoodsListFn)
+
+router.post('/setgoods', upload.single('pic'), setGoodsFn)
+
+router.post('/takeoffgoods', takeOffGoodsFn)
+
+router.post('/delgoods', delGoodsFn)
 
 export default router

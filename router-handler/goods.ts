@@ -63,9 +63,42 @@ export const addGoodsFn = (req: Request, res: Response) => {
 
 // 获取全部商品
 export const getGoodsListFn = (req: Request, res: Response) => {
-  const sqlStr = 'select * from goods_table'
+  const sqlStr = 'select * from goods_table where isdel = 0'
   db.query(sqlStr, (err, results) => {
     if (err) return res.send({ code: 1, msg: err.message })
     res.send({ code: 0, msg: '获取商品列表成功', data: results })
+  })
+}
+
+// 修改商品
+export const setGoodsFn = (req: Request, res: Response) => {
+  const pic = path.join('/goods', (req as any).file.filename)
+  const sqlStr = 'update goods_table set ? where goodsID = ?'
+  db.query(sqlStr, [{ ...req.body, pic }, req.body.goodsID], (err, results) => {
+    if (err) return res.send({ code: 1, msg: err.message })
+    if (results.affectedRows !== 1) return res.send({ code: 1, msg: '修改商品失败' })
+    res.send({ code: 0, msg: '修改商品成功' })
+  })
+}
+
+// 上/下架商品
+export const takeOffGoodsFn = (req: Request, res: Response) => {
+  const sqlStr = 'update goods_table set status = ? where goodsID = ?'
+
+  db.query(sqlStr, [req.body.status, req.body.goodsID], (err, results) => {
+    if (err) return res.send({ code: 1, msg: err.message })
+    if (results.affectedRows !== 1) return res.send({ code: 1, msg: '操作失败' })
+    res.send({ code: 0, msg: '操作成功' })
+  })
+}
+
+// 删除商品
+export const delGoodsFn = (req: Request, res: Response) => {
+  const sqlStr = 'update goods_table set isdel = 1 where goodsID = ?'
+
+  db.query(sqlStr, req.body.goodsID, (err, results) => {
+    if (err) return res.send({ code: 1, msg: err.message })
+    if (results.affectedRows !== 1) return res.send({ code: 1, msg: '操作失败' })
+    res.send({ code: 0, msg: '删除商品成功' })
   })
 }
